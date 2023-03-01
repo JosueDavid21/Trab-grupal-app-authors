@@ -1,0 +1,30 @@
+version: '3'
+services:
+  postgres-sql:
+    image: postgres:alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: distribuida
+    ports:
+      - 5432:5433
+
+  authors-service:
+      image: josued21/app-authors:1.0.0
+      expose:
+        - 8000
+      deploy:
+        replicas: 1
+      environment:
+        - DATABASE_NAME=distribuida
+        - DATABASE_USER=postgres
+        - DATABASE_PASSWORD=postgres
+        - DATABASE_HOST=postgres-sql
+        - DATABASE_PORT=5433
+        - SERVER-PORT=8000
+      depends_on:
+        - postgres-sql
+      # labels:
+      #   - "traefik.http.routers.authors.rule=PathPrefix(`/app2`)"
+      #   - "traefik.http.middlewares.authors.stripprefix.prefixes=/app2"
+      #   - "traefik.http.routers.authors.middlewares=authors"
